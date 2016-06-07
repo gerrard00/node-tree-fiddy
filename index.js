@@ -1,12 +1,12 @@
 'use strict';
-// commands : git ls-files && git ls-files --other --exclude-standard
 
-const spawn = require('child_process').spawn;
-const split2 = require('split2');
 const archy = require('archy');
+const GitSource = require('./src/GitSource');
+
 
 const result = {};
-let completeProcesses = 0;
+
+//TODO: fall back to ls readdir if we aren't in a repo
 
 function convertToArchyFriendly(original, name) {
   const result = {
@@ -26,7 +26,16 @@ function convertToArchyFriendly(original, name) {
   return result;
 }
 
-function addEntry(entry) {
+// function processComplete() {
+// }
+
+// for (let entry of git.getFiles()) {
+//   console.log('--->', entry);
+// }
+
+const gitSource = new GitSource();
+
+gitSource.on('data', entry => {
   let partOfResult = result;
 
   const entryParts = entry.split('/');
@@ -44,43 +53,11 @@ function addEntry(entry) {
       partOfResult = partOfResult[entryPart];
     }
   }
-}
+});
 
-function processComplete() {
-  if (++completeProcesses === 2) {
-    const archyFriendlyResult = convertToArchyFriendly(result, '.');
-    // console.log(JSON.stringify(archyFriendlyResult, null, 4));
-    console.log(archy(archyFriendlyResult));
-  }
-}
+gitSource.on('done', () => {
+  const archyFriendlyResult = convertToArchyFriendly(result, '.');
+  console.log(archy(archyFriendlyResult));
+});
 
-function executeCommand(extraArguments) {
-  const args = ['ls-files'];
-
-  if (extraArguments) {
-    args.push(...extraArguments);
-  }
-
-  const ls = spawn('git', args);
-  ls.stdout
-    .pipe(split2())
-    .on('data', addEntry);
-
-  ls.stderr.on('data', (data) => {
-    console.log(`stderr: ${data}`);
-  });
-
-  ls.on('close', (code) => {
-    if (code !== 0) {
-      // TODO: do something
-      console.error('Uh oh');
-      return;
-    }
-
-    processComplete();
-  });
-}
-
-executeCommand();
-executeCommand(['--other', '--exclude-standard']);
-
+gitSource.readFiles('.');
