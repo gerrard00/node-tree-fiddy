@@ -1,0 +1,20 @@
+{
+  "name": "tree-fiddy",
+  "version": "0.0.1",
+  "description": "Like tree, but honors ignore files.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "git",
+    "tree",
+    "gitignore"
+  ],
+  "author": "gerrard@pickabar.com",
+  "license": "ISC",
+  "dependencies": {
+    "archy": "^1.0.0",
+    "split2": "^2.1.0"
+  }
+}
