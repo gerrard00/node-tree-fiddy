@@ -1,5 +1,5 @@
 {
-  "name": "tree-fiddy",
+  "name": "node-tree-fiddy",
   "version": "0.0.1",
   "description": "Like tree, but honors ignore files.",
   "main": "index.js",
