@@ -2,40 +2,13 @@
 
 const archy = require('archy');
 const GitSource = require('./src/GitSource');
-
+const FileSystemSource = require('./src/FileSystemSource');
+const Display = require('./src/Display');
 
 const result = {};
 
 //TODO: fall back to ls readdir if we aren't in a repo
-
-function convertToArchyFriendly(original, name) {
-  const result = {
-    label : name,
-  };
-
-  result.nodes = Object.keys(original).map(key => {
-    const currentItem = original[key];
-
-    if (!currentItem) {
-      return key;
-    }
-
-    return convertToArchyFriendly(currentItem, key);
-  });
-
-  return result;
-}
-
-// function processComplete() {
-// }
-
-// for (let entry of git.getFiles()) {
-//   console.log('--->', entry);
-// }
-
-const gitSource = new GitSource();
-
-gitSource.on('data', entry => {
+function handleData(entry) {
   let partOfResult = result;
 
   const entryParts = entry.split('/');
@@ -53,11 +26,33 @@ gitSource.on('data', entry => {
       partOfResult = partOfResult[entryPart];
     }
   }
-});
+}
 
-gitSource.on('done', () => {
-  const archyFriendlyResult = convertToArchyFriendly(result, '.');
-  console.log(archy(archyFriendlyResult));
-});
+function displayData(fileTree) {
+  const displayer = new Display();
+  displayer.displayFiles(fileTree)
+}
 
-gitSource.readFiles('.');
+module.exports = function index(path) {
+  const gitSource = new GitSource();
+
+  gitSource.on('data', handleData);
+  gitSource.on('done', () => displayData(result));
+  gitSource.on('error', error => {
+    console.error('git failed', error);
+  });
+
+  gitSource.on('notsupported', () => {
+    // fallback to the fs
+    const fsSource = new FileSystemSource();
+    fsSource.on('data', handleData);
+    fsSource.on('done', () => displayData(result));
+    //TODO: handle errors:
+    fsSource.on('error', error => {
+      console.error('fs failed', error);
+    });
+    fsSource.readFiles(path);
+  });
+
+  gitSource.readFiles(path);
+};

@@ -3,17 +3,16 @@
 const events = require('events');
 const spawn = require('child_process').spawn;
 const split2 = require('split2');
-let foo;
 
-
-function executeCommand(gitSource, extraArguments) {
+function executeCommand(gitSource, path, extraArguments) {
   const args = ['ls-files'];
+  const errorBuffers = [];
 
   if (extraArguments) {
     args.push(...extraArguments);
   }
 
-  const ls = spawn('git', args);
+  const ls = spawn('git', args, { cwd: path });
   ls.stdout
     .pipe(split2())
     .on('data', data => {
@@ -22,13 +21,17 @@ function executeCommand(gitSource, extraArguments) {
 
 
   ls.stderr.on('data', (data) => {
-    gitSource._handleErrorCallbacks(data);
+    errorBuffers.push(data);
   });
 
   ls.on('close', (code) => {
+    if (errorBuffers.length > 0) {
+      const errorString = Buffer.concat(errorBuffers).toString();
+      gitSource._handleErrorCallbacks(errorString);
+    }
     if (code !== 0) {
       // TODO: do something
-      console.error('Uh oh');
+      console.error(`Uh oh, bad exit code ${code}`);
       return;
     }
 
@@ -41,12 +44,14 @@ class GitSource extends events.EventEmitter
   constructor() {
     super();
     this.numberOfCommandsToProcess = 2;
+    this.isRepo = true;
   }
 
-  readFiles() {
+  readFiles(path) {
+
     this.numberOfCommandsProcessed = 0;
-    executeCommand(this);
-    executeCommand(this, ['--other', '--exclude-standard']);
+    executeCommand(this, path);
+    executeCommand(this, path, ['--other', '--exclude-standard']);
   }
 
   _handleDataCallbacks(data) {
@@ -54,14 +59,21 @@ class GitSource extends events.EventEmitter
   }
 
   _handleDoneCallbacks() {
-    if (++this.numberOfCommandsProcessed === this.numberOfCommandsToProcess) {
+    if (this.isRepo && 
+        ++this.numberOfCommandsProcessed === 
+          this.numberOfCommandsToProcess) {
       this.emit('done');
     }
   }
 
   _handleErrorCallbacks(error) {
-    // TODO: do something
-    console.error(error);
+    // if we're just not in a git repo, just emit done
+    if (error.match(/Not a git repository/)) {
+      this.isRepo = false;
+      this.emit('notsupported');
+    } else {
+      this.emit('error', error);
+    }
   }
 }
 
