@@ -13,13 +13,13 @@ function walkDirectory(fsSource, targetPath, rootPath) {
   }
 
   const files = fs.readdirSync(targetPath);
-   
+
   for (let file of files) {
     const fullPath = path.join(targetPath, file);
     entries.push(fullPath);
 
     if(fs.statSync(fullPath).isDirectory()) {
-        const childEntries = walkDirectory(fsSource, fullPath, rootPath); 
+        const childEntries = walkDirectory(fsSource, fullPath, rootPath);
         //TODO: we really need to process the full chain, could have git children
         entries.push(...childEntries);
     }

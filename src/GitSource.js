@@ -59,8 +59,8 @@ class GitSource extends events.EventEmitter
   }
 
   _handleDoneCallbacks() {
-    if (this.isRepo && 
-        ++this.numberOfCommandsProcessed === 
+    if (this.isRepo &&
+        ++this.numberOfCommandsProcessed ===
           this.numberOfCommandsToProcess) {
       this.emit('done');
     }
