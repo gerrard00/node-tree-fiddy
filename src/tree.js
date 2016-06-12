@@ -27,16 +27,16 @@ function handleData(entry) {
   }
 }
 
-function displayData(fileTree) {
+function displayData(fileTree, name) {
   const displayer = new Display();
-  displayer.displayFiles(fileTree)
+  displayer.displayFiles(fileTree, name)
 }
 
-module.exports = function tree(path) {
+module.exports = function tree(targetPath) {
   const gitSource = new GitSource();
 
   gitSource.on('data', handleData);
-  gitSource.on('done', () => displayData(result));
+  gitSource.on('done', () => displayData(result, targetPath));
   gitSource.on('error', error => {
     console.error('git failed', error);
   });
@@ -45,13 +45,13 @@ module.exports = function tree(path) {
     // fallback to the fs
     const fsSource = new FileSystemSource();
     fsSource.on('data', handleData);
-    fsSource.on('done', () => displayData(result));
+    fsSource.on('done', () => displayData(result, targetPath));
     //TODO: handle errors:
     fsSource.on('error', error => {
       console.error('fs failed', error);
     });
-    fsSource.readFiles(path);
+    fsSource.readFiles(targetPath);
   });
 
-  gitSource.readFiles(path);
+  gitSource.readFiles(targetPath);
 };
