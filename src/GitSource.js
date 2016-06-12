@@ -29,7 +29,9 @@ function executeCommand(gitSource, path, extraArguments) {
       const errorString = Buffer.concat(errorBuffers).toString();
       gitSource._handleErrorCallbacks(errorString);
     }
-    if (code !== 0) {
+
+    // TODO: 128 seems to happen for not a git repo. prove it and use that code instead of error string
+    if (code !== 0 && code != 128) {
       // TODO: do something
       console.error(`Uh oh, bad exit code ${code}`);
       return;
