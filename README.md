@@ -5,3 +5,19 @@ The tree utility is very useful, unless you are in a folder that contains someth
 <a href="https://asciinema.org/a/ddgtztnvdk9emwsvqfmj0tlxr" target="_blank"><img src="https://asciinema.org/a/ddgtztnvdk9emwsvqfmj0tlxr.png" /></a>
 
 At this point it's in a super alpha state. I'll keep improving it as time allows.
+
+## Usage
+
+```sh
+# install yo
+npm install --global tree-fiddy
+
+# run it
+node-tree-fiddy .
+```
+
+You may want to setup an alias to use tree-fiddy instead of tree:
+
+```sh
+alias tree='node-tree-fiddy'
+```
