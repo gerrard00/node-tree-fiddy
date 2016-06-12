@@ -1,6 +1,6 @@
 {
   "name": "tree-fiddy",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Like tree, but honors .gitignore files.",
   "main": "index.js",
   "bin": {
