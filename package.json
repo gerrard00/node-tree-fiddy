@@ -1,13 +1,17 @@
 {
-  "name": "node-tree-fiddy",
+  "name": "tree-fiddy",
   "version": "0.0.1",
-  "description": "Like tree, but honors ignore files.",
+  "description": "Like tree, but honors .gitignore files.",
   "main": "index.js",
   "bin": {
     "node-tree-fiddy": "index.js"
   },
   "scripts": {
     "test": "_mocha --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gerrard00/node-tree-fiddy"
   },
   "keywords": [
     "git",
