@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const tree = require('./src/tree');
 
 const targetPath = (process.argv.length == 3) ?

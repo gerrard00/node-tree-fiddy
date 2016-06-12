@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "Like tree, but honors ignore files.",
   "main": "index.js",
+  "bin": {
+    "node-tree-fiddy": "index.js"
+  },
   "scripts": {
     "test": "_mocha --recursive"
   },
