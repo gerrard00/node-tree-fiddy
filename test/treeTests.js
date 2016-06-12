@@ -13,7 +13,7 @@ const Display = require('../src/Display');
 
 const archy = require('archy');
 
-const sut = require('../index');
+const sut = require('../src/tree');
 
 chai.use(sinonChai);
 

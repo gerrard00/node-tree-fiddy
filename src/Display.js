@@ -1,3 +1,5 @@
+const archy = require('archy');
+
 function convertToArchyFriendly(original, name) {
   const result = {
     label : name,
