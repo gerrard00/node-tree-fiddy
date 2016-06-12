@@ -69,8 +69,10 @@ class GitSource extends events.EventEmitter
   _handleErrorCallbacks(error) {
     // if we're just not in a git repo, just emit done
     if (error.match(/Not a git repository/)) {
-      this.isRepo = false;
-      this.emit('notsupported');
+      if (this.isRepo) {
+        this.isRepo = false;
+        this.emit('notsupported');
+      }
     } else {
       this.emit('error', error);
     }
