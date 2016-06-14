@@ -1,4 +1,5 @@
 const archy = require('archy');
+const path = require('path');
 
 function convertToArchyFriendly(original, name) {
   const result = {
@@ -20,7 +21,8 @@ function convertToArchyFriendly(original, name) {
 
 class Display {
   displayFiles(fileTree, rootPath) {
-    const archyFriendlyResult = convertToArchyFriendly(fileTree, rootPath);
+    const archyFriendlyResult = 
+      convertToArchyFriendly(fileTree, rootPath);
     console.log(archy(archyFriendlyResult));
   }
 }

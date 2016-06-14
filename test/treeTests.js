@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
+require('co-mocha');
 
 const GitSource = require('../src/GitSource');
 const FileSystemSource = require('../src/FileSystemSource');
@@ -17,7 +18,7 @@ const sut = require('../src/tree');
 
 chai.use(sinonChai);
 
-describe('provides tree output', function tests() {
+describe('provides tree output', function() {
   let sandbox;
 
   beforeEach(function() {
@@ -29,28 +30,29 @@ describe('provides tree output', function tests() {
   });
 
   it('falls back to normal processing if not in git repo',
-     function () {
+     function *() {
        // arrange
        const dirPath = 'foo';
+       const fsResult = ['bar', 'baz'];
        const expectedDisplayObject = {
-         foo: null,
-         bar: null
+         bar: null,
+         baz: null
        };
 
        sandbox.stub(GitSource.prototype, 'readFiles', function() {
-         this.emit('notsupported');
+         return Promise.resolve(null);
        });
-       const fsStub = sandbox.stub(FileSystemSource.prototype, 'readFiles', function() {
-         this.emit('data', 'foo');
-         this.emit('data', 'bar');
-         this.emit('done');
-       });
+
+       const fsStub = 
+         sandbox.stub(FileSystemSource.prototype, 'readFiles', function () {
+          return Promise.resolve(fsResult);
+         });
        const displayStub = 
          sandbox.stub(Display.prototype, 'displayFiles')
           .withArgs(expectedDisplayObject);
 
        // act
-       sut(dirPath);
+       const result = yield sut(dirPath);
 
        // assert
        fsStub.should.have.been.called;

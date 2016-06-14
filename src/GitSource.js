@@ -1,82 +1,72 @@
 'use strict';
 
-const events = require('events');
 const spawn = require('child_process').spawn;
 const split2 = require('split2');
 
-function executeCommand(gitSource, path, extraArguments) {
-  const args = ['ls-files'];
-  const errorBuffers = [];
+function executeCommand(path, extraArguments) {
+  return new Promise((resolve, reject) => {
+    const args = ['ls-files'];
+    const dataBuffers = [];
+    const errorBuffers = [];
 
-  if (extraArguments) {
-    args.push(...extraArguments);
-  }
+    if (extraArguments) {
+      args.push(...extraArguments);
+    }
 
-  const ls = spawn('git', args, { cwd: path });
-  ls.stdout
-    .pipe(split2())
-    .on('data', data => {
-      gitSource._handleDataCallbacks(data);
+    const ls = spawn('git', args, { cwd: path });
+    ls.stdout
+      .pipe(split2())
+      .on('data', data => {
+        dataBuffers.push(data);
+      });
+
+
+    ls.stderr.on('data', (data) => {
+      errorBuffers.push(data);
     });
 
+    ls.on('close', (code) => {
+      if (errorBuffers.length > 0) {
+        const errorString = Buffer.concat(errorBuffers).toString();
+        return reject(errorString);
+      }
 
-  ls.stderr.on('data', (data) => {
-    errorBuffers.push(data);
-  });
+      // TODO: 128 seems to happen for not a git repo, but it's only for that error.
+      // ignore exit codes for now
+      // if (code !== 0 && code != 128) {
+      //   return reject(`Bad exit code ${code}`);
+      // }
 
-  ls.on('close', (code) => {
-    if (errorBuffers.length > 0) {
-      const errorString = Buffer.concat(errorBuffers).toString();
-      gitSource._handleErrorCallbacks(errorString);
-    }
-
-    // TODO: 128 seems to happen for not a git repo. prove it and use that code instead of error string
-    if (code !== 0 && code != 128) {
-      // TODO: do something
-      console.error(`Uh oh, bad exit code ${code}`);
-      return;
-    }
-
-    gitSource._handleDoneCallbacks();
+      resolve(dataBuffers);
+    });
   });
 }
 
-class GitSource extends events.EventEmitter
+class GitSource
 {
   constructor() {
-    super();
     this.numberOfCommandsToProcess = 2;
     this.isRepo = true;
   }
 
-  readFiles(path) {
+  *readFiles(path) {
+    try {
+      const trackedResults = 
+        yield executeCommand(path);
+      const untrackedResults = 
+        yield executeCommand(path, ['--other', '--exclude-standard']);
 
-    this.numberOfCommandsProcessed = 0;
-    executeCommand(this, path);
-    executeCommand(this, path, ['--other', '--exclude-standard']);
-  }
-
-  _handleDataCallbacks(data) {
-    this.emit('data', data);
-  }
-
-  _handleDoneCallbacks() {
-    if (this.isRepo &&
-        ++this.numberOfCommandsProcessed ===
-          this.numberOfCommandsToProcess) {
-      this.emit('done');
-    }
-  }
-
-  _handleErrorCallbacks(error) {
-    // if we're just not in a git repo, just emit done
-    if (error.match(/Not a git repository/)) {
-      if (this.isRepo) {
-        this.isRepo = false;
-        this.emit('notsupported');
+      if (!trackedResults || !untrackedResults) {
+        throw new Error('Unexpected null results from git commands.');
       }
-    } else {
-      this.emit('error', error);
+      return [...trackedResults, ...untrackedResults];
+    } catch (err) {
+      // not a repo, return null
+      if(err.toString().match(/Not a git repository/)) {
+        return null;
+      }
+
+      throw err;
     }
   }
 }

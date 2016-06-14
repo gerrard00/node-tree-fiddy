@@ -1,5 +1,7 @@
 'use strict';
 
+const co = require('co');
+
 const GitSource = require('./GitSource');
 const FileSystemSource = require('./FileSystemSource');
 const Display = require('./Display');
@@ -27,31 +29,25 @@ function handleData(entry) {
   }
 }
 
-function displayData(fileTree, name) {
-  const displayer = new Display();
-  displayer.displayFiles(fileTree, name)
-}
-
 module.exports = function tree(targetPath) {
-  const gitSource = new GitSource();
+  return co(function*() {
+    try {
+      const gitSource = new GitSource();
+      let entries = yield gitSource.readFiles(targetPath);
 
-  gitSource.on('data', handleData);
-  gitSource.on('done', () => displayData(result, targetPath));
-  gitSource.on('error', error => {
-    console.error('git failed', error);
+      // if the result is null, it wasn't a repo
+      if (!entries) {
+        const fsSource = new FileSystemSource();
+        entries = yield fsSource.readFiles(targetPath);
+      }
+
+      entries.forEach(entry => handleData(entry));
+
+      const displayer = new Display();
+      displayer.displayFiles(result, targetPath)
+    } catch(err) {
+      console.error('tree error: ', err);
+      process.exit(-1); // unexpected error
+    }
   });
-
-  gitSource.on('notsupported', () => {
-    // fallback to the fs
-    const fsSource = new FileSystemSource();
-    fsSource.on('data', handleData);
-    fsSource.on('done', () => displayData(result, targetPath));
-    //TODO: handle errors:
-    fsSource.on('error', error => {
-      console.error('fs failed', error);
-    });
-    fsSource.readFiles(targetPath);
-  });
-
-  gitSource.readFiles(targetPath);
 };
