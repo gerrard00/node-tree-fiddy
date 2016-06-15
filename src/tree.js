@@ -4,30 +4,8 @@ const co = require('co');
 
 const GitSource = require('./GitSource');
 const FileSystemSource = require('./FileSystemSource');
+const Builder = require('./Builder');
 const Display = require('./Display');
-
-const result = {};
-
-//TODO: fall back to ls readdir if we aren't in a repo
-function handleData(entry) {
-  let partOfResult = result;
-
-  const entryParts = entry.split('/');
-
-  for (let index = 0; index < entryParts.length; index++) {
-    const entryPart = entryParts[index];
-
-    if (index + 1 === entryParts.length) {
-      partOfResult[entryPart] = null;
-    } else {
-      if (!partOfResult[entryPart]) {
-        partOfResult[entryPart] = {};
-      }
-
-      partOfResult = partOfResult[entryPart];
-    }
-  }
-}
 
 module.exports = function tree(targetPath) {
   return co(function*() {
@@ -41,10 +19,12 @@ module.exports = function tree(targetPath) {
         entries = yield fsSource.readFiles(targetPath);
       }
 
-      entries.forEach(entry => handleData(entry));
+      const builder = new Builder();
+      entries.forEach(entry => builder.addEntry(entry));
 
+      const fileTree = builder.getOutput(); 
       const displayer = new Display();
-      displayer.displayFiles(result, targetPath)
+      displayer.displayFiles(fileTree, targetPath)
     } catch(err) {
       console.error('tree error: ', err);
       process.exit(-1); // unexpected error
