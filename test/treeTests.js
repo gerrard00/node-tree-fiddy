@@ -43,11 +43,11 @@ describe('provides tree output', function() {
          return Promise.resolve(null);
        });
 
-       const fsStub = 
+       const fsStub =
          sandbox.stub(FileSystemSource.prototype, 'readFiles', function () {
           return Promise.resolve(fsResult);
          });
-       const displayStub = 
+       const displayStub =
          sandbox.stub(Display.prototype, 'displayFiles')
           .withArgs(expectedDisplayObject);
 
