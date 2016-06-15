@@ -22,7 +22,7 @@ function *walkDirectory(fsSource, targetPath, rootPath) {
     const relativePath = path.relative(rootPath, fullPath);
     entries.push(relativePath);
 
-    if(fs.statSync(fullPath).isDirectory()) {
+    if(fs.lstatSync(fullPath).isDirectory()) {
       // check for a .git sub-folder
       let isRepo = false;
 
