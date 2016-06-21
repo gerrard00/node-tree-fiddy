@@ -1,9 +1,8 @@
 'use strict';
 
-const spawn = require('child_process').spawn;
 const split2 = require('split2');
 
-function executeCommand(path, extraArguments) {
+function executeCommand(spawn, path, extraArguments) {
   return new Promise((resolve, reject) => {
     const args = ['ls-files'];
     const dataBuffers = [];
@@ -44,22 +43,25 @@ function executeCommand(path, extraArguments) {
 
 class GitSource
 {
-  constructor() {
+  constructor(spawn) {
+    this.spawn = spawn;
     this.numberOfCommandsToProcess = 2;
     this.isRepo = true;
   }
 
-  *readFiles(path) {
+  *readFiles(path, mySpawn) {
     try {
       const trackedResults = 
-        yield executeCommand(path);
+        yield executeCommand(this.spawn, path);
       const untrackedResults = 
-        yield executeCommand(path, ['--other', '--exclude-standard']);
+        yield executeCommand(this.spawn, 
+          path, ['--other', '--exclude-standard']);
 
       if (!trackedResults || !untrackedResults) {
         throw new Error('Unexpected null results from git commands.');
       }
-      return [...trackedResults, ...untrackedResults];
+      const allEntries = [...trackedResults, ...untrackedResults];
+      return allEntries;
     } catch (err) {
       // not a repo, return null
       if(err.toString().match(/Not a git repository/)) {
