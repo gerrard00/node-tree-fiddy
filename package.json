@@ -24,7 +24,6 @@
     "archy": "^1.0.0",
     "co": "^4.6.0",
     "graceful-fs": "^4.1.4",
-    "sinon": "^1.17.4",
     "split2": "^2.1.0"
   },
   "devDependencies": {
@@ -32,6 +31,7 @@
     "co-mocha": "^1.1.2",
     "mocha": "^2.5.3",
     "mock-spawn": "^0.2.6",
+    "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0"
   }
 }
