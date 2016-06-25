@@ -6,15 +6,17 @@ function convertToArchyFriendly(original, name) {
     label : name,
   };
 
-  result.nodes = Object.keys(original).map(key => {
-    const currentItem = original[key];
+  if (original.children) {
+    result.nodes = Object.keys(original.children).map(key => {
+      const currentItem = original.children[key];
 
-    if (!currentItem) {
-      return key;
-    }
+      if (!currentItem) {
+        return key;
+      }
 
-    return convertToArchyFriendly(currentItem, key);
-  });
+      return convertToArchyFriendly(currentItem, key);
+    });
+  }
 
   return result;
 }

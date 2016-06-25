@@ -11,11 +11,17 @@ describe('Display', function() {
     // arrange
 
     const inputTree = {
-      foo: {
-        bar: null,
-        baz: {
-          baz1: null,
-          baz2: null
+      children: {
+        foo: {
+          children: {
+            bar: {},
+            baz: {
+              children: {
+                baz1: {},
+                baz2: {}
+              }
+            }
+          }
         }
       }
     };
