@@ -22,9 +22,10 @@ module.exports = function tree(targetPath) {
       const builder = new Builder();
       entries.forEach(entry => builder.addEntry(entry));
 
-      const fileTree = builder.getOutput(); 
+      const fileTree = builder.getOutput();
       const displayer = new Display();
-      displayer.displayFiles(fileTree, targetPath)
+      const output = displayer.displayFiles(fileTree, targetPath)
+      console.log(output);
     } catch(err) {
       console.error('tree error: ', err);
       process.exit(-1); // unexpected error

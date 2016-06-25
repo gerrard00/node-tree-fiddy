@@ -21,9 +21,10 @@ function convertToArchyFriendly(original, name) {
 
 class Display {
   displayFiles(fileTree, rootPath) {
-    const archyFriendlyResult = 
+    const archyFriendlyResult =
       convertToArchyFriendly(fileTree, rootPath);
-    console.log(archy(archyFriendlyResult));
+
+    return archy(archyFriendlyResult);
   }
 }
 
