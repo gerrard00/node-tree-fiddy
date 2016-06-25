@@ -20,9 +20,11 @@ function *walkDirectory(targetPath, builder, rootPath) {
   for (let file of files) {
     const fullPath = path.join(targetPath, file);
     const relativePath = path.relative(rootPath, fullPath);
-    builder.addEntry(relativePath);
+    const isDirectory = fs.lstatSync(fullPath).isDirectory();
 
-    if(fs.lstatSync(fullPath).isDirectory()) {
+    builder.addEntry(relativePath, { isDirectory });
+
+    if(isDirectory) {
       // check for a .git sub-folder
       let isRepo = false;
 
