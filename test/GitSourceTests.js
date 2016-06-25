@@ -8,6 +8,7 @@ const sinonChai = require('sinon-chai');
 const mockSpawn = require('mock-spawn');
 const childProcess = require('child_process');
 
+const Builder = require('../src/Builder');
 
 describe('GitSource', function(){
   let sandbox;
@@ -21,11 +22,12 @@ describe('GitSource', function(){
   });
 
   it('reads file from git repo', function *() {
-    const expectedResult = [ 'foo',
+    const expectedFiles = [ 'foo',
       'foo/bar',
       'foo/baz',
       'foo/baz/baz1',
       'foo/baz/baz2' ];
+    const expectedTree = { some: 'tree' };
 
     const mySpawn = mockSpawn();
     mySpawn.sequence.add(mySpawn.simple(0,
@@ -40,10 +42,16 @@ describe('GitSource', function(){
 
     childProcess.spawn = mySpawn;
 
+    // TODO: confirm we are actually calling addEntry correctly
+    const stubBuilder =
+      sinon
+        .stub(Builder.prototype, 'getOutput')
+        .returns(expectedTree);
+
     const GitSource = require('../src/GitSource');
     const gitSource = new GitSource();
     const result = yield gitSource.readFiles('foo');
 
-    result.should.be.eql(expectedResult);
+    result.should.be.eql(expectedTree);
   });
 });

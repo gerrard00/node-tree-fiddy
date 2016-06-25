@@ -2,13 +2,13 @@
 
 const fs = require('fs');
 const path = require('path');
+const Builder = require('./Builder');
 
 //TODO: interdependency, send this in as an argument
 const GitSource = require('./GitSource');
 const gitSourceInstance = new GitSource();
 
-function *walkDirectory(fsSource, targetPath, rootPath) {
-  const entries = [];
+function *walkDirectory(targetPath, builder, rootPath) {
   let isRoot = !rootPath;
 
   if (isRoot) {
@@ -20,7 +20,7 @@ function *walkDirectory(fsSource, targetPath, rootPath) {
   for (let file of files) {
     const fullPath = path.join(targetPath, file);
     const relativePath = path.relative(rootPath, fullPath);
-    entries.push(relativePath);
+    builder.addEntry(relativePath);
 
     if(fs.lstatSync(fullPath).isDirectory()) {
       // check for a .git sub-folder
@@ -39,38 +39,35 @@ function *walkDirectory(fsSource, targetPath, rootPath) {
         }
       }
 
-      let childEntries;
+      let handledByGit = false;
 
       if (isRepo) {
-        // try to get results from git, may get nothing
-        childEntries = yield gitSourceInstance.readFiles(fullPath);
+        // try to get an object from git, may get nothing
+        const gitObject = yield gitSourceInstance.readFiles(fullPath);
 
-        // if we got git entries, add the relative path as a prefix
-        if (childEntries) {
-          childEntries =
-            childEntries.map(entry =>
-              path.join(relativePath, entry));
+        // if we got git a gi object, add it to our builder
+        if (gitObject) {
+          handledByGit = true;
+          builder.addEntry(relativePath, gitObject);
         }
       }
 
       // if we got here it's not a repo, or we had a git problem
-      if (!childEntries) {
-        childEntries = yield *walkDirectory(fsSource, fullPath, rootPath);
+      if (!handledByGit) {
+        yield *walkDirectory(fullPath, builder, rootPath);
       }
-
-      entries.push(...childEntries);
     }
   }
-
-  return entries;
 }
 
 class FileSystemSource
 {
   *readFiles(targetPath) {
-    const entries = yield walkDirectory(this, targetPath);
+    const builder = new Builder();
+    yield walkDirectory(targetPath, builder);
 
-    return entries;
+    const fileTree = builder.getOutput();
+    return fileTree;
   }
 }
 

@@ -30,27 +30,22 @@ describe('Tree', function() {
      function *() {
        // arrange
        const dirPath = 'foo';
-       const fsResult = ['bar', 'baz'];
-       const expectedDisplayObject = { something: 'to display' };
+       const treeToDisplay = { something: 'to display' };
 
        const sources = [ {
          readFiles : () => Promise.resolve(null)
        }, {
-         readFiles: () => Promise.resolve(fsResult)
+         readFiles: () => Promise.resolve(treeToDisplay)
        }];
 
-       const builderStub =
-         sandbox.stub(Builder.prototype, 'getOutput')
-          .returns(expectedDisplayObject);
        const displayStub =
          sandbox.stub(Display.prototype, 'displayFiles')
-          .withArgs(expectedDisplayObject);
+          .withArgs(treeToDisplay);
 
        // act
        const result = yield sut(sources, dirPath);
 
        // assert
-       builderStub.should.have.been.called;
        displayStub.should.have.been.called;
      });
 });

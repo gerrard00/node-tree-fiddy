@@ -2,6 +2,7 @@
 
 const split2 = require('split2');
 const spawn = require('child_process').spawn;
+const Builder = require('./Builder');
 
 function executeCommand(path, extraArguments) {
   return new Promise((resolve, reject) => {
@@ -59,8 +60,13 @@ class GitSource
       if (!trackedResults || !untrackedResults) {
         throw new Error('Unexpected null results from git commands.');
       }
-      const allEntries = [...trackedResults, ...untrackedResults];
-      return allEntries;
+
+      const builder = new Builder();
+      trackedResults.forEach(entry => builder.addEntry(entry));
+      untrackedResults.forEach(entry => builder.addEntry(entry));
+
+      const fileTree = builder.getOutput();
+      return fileTree;
     } catch (err) {
       // not a repo, return null
       if(err.toString().match(/Not a git repository/)) {
