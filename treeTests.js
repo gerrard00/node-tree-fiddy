@@ -18,7 +18,7 @@ const sut = require('../src/tree');
 
 chai.use(sinonChai);
 
-describe('provides tree output', function() {
+describe('Tree', function() {
   let sandbox;
 
   beforeEach(function() {

@@ -8,7 +8,7 @@ const sinonChai = require('sinon-chai');
 const mockSpawn = require('mock-spawn');
 
 
-describe('reads file from git repo', function(){
+describe('GitSource', function(){
   let sandbox;
 
   beforeEach(function() {
@@ -19,7 +19,7 @@ describe('reads file from git repo', function(){
     sandbox.restore();
   });
 
-  it.only('can get files', function *() {
+  it('reads file from git repo', function *() {
     const expectedResult = [ 'foo',
       'foo/bar',
       'foo/baz',

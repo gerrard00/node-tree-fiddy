@@ -5,7 +5,7 @@ const should = chai.should();
 
 const Builder = require('../src/Builder');
 
-describe('builds a tree', function() {
+describe('Builder', function() {
   it('can build a normal tree', function() {
     const expectedOutput = {
       'foo' : {
