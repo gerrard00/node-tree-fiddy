@@ -8,11 +8,17 @@ const Builder = require('../src/Builder');
 describe('Builder', function() {
   it('can build a normal tree', function() {
     const expectedOutput = {
-      'foo' : {
-        'bar': null,
-        'baz': {
-          'baz1' : null,
-          'baz2' : null
+      'children': {
+        'foo' : {
+          'children': {
+            'bar': {},
+            'baz': {
+              'children': {
+                'baz1' : {},
+                'baz2' : {}
+              }
+            }
+          }
         }
       }
     };
@@ -24,8 +30,28 @@ describe('Builder', function() {
     sut.addEntry('foo/baz/baz1');
     sut.addEntry('foo/baz/baz2');
 
-    const output = sut.getOutput();
+    const actualOutput = sut.getOutput();
 
-    expectedOutput.should.be.eql(output);
+    actualOutput.should.be.eql(expectedOutput);
+  });
+
+  it('can store extra data', function() {
+    const expectedOutput = {
+      'children': {
+        'batman': {
+          'is_cool': true
+        },
+        'robin': {}
+      }
+    };
+
+    const sut = new Builder();
+    // this entry has extra data
+    sut.addEntry('batman', { is_cool: true });
+    sut.addEntry('robin');
+
+    const actualOutput = sut.getOutput();
+
+    actualOutput.should.be.eql(expectedOutput);
   });
 });

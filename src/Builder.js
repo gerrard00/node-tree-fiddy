@@ -4,7 +4,7 @@ class Builder
     this.output = {};
   }
 
-  addEntry(entry) {
+  addEntry(entry, extraData) {
     let partOfResult = this.output;
 
     const entryParts = entry.split('/');
@@ -12,19 +12,26 @@ class Builder
     for (let index = 0; index < entryParts.length; index++) {
       const entryPart = entryParts[index];
 
-      if (index + 1 === entryParts.length) {
-        partOfResult[entryPart] = null;
-      } else {
-        if (!partOfResult[entryPart]) {
-          partOfResult[entryPart] = {};
-        }
-
-        partOfResult = partOfResult[entryPart];
+      if (!partOfResult.children) {
+        partOfResult.children = {};
       }
+
+      if (!partOfResult.children[entryPart]) {
+        partOfResult = partOfResult.children[entryPart] = {};
+      } else {
+        partOfResult = partOfResult.children[entryPart];
+      }
+    }
+
+    // the entry part is now our lowest level node
+    // add any extra data that was provided
+    if (extraData) {
+      Object.assign(partOfResult, extraData);
     }
   }
 
   getOutput() {
+    // quick hack to eliminate root item
     return this.output;
   }
 }
