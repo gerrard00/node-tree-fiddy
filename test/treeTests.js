@@ -8,11 +8,8 @@ const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 require('co-mocha');
 
-const GitSource = require('../src/GitSource');
-const FileSystemSource = require('../src/FileSystemSource');
+const Builder = require('../src/Builder');
 const Display = require('../src/Display');
-
-const archy = require('archy');
 
 const sut = require('../src/tree');
 
@@ -29,33 +26,31 @@ describe('Tree', function() {
     sandbox.restore();
   });
 
-  it('falls back to normal processing if not in git repo',
+  it('tries multiple sources',
      function *() {
        // arrange
        const dirPath = 'foo';
        const fsResult = ['bar', 'baz'];
-       const expectedDisplayObject = {
-         bar: null,
-         baz: null
-       };
+       const expectedDisplayObject = { something: 'to display' };
 
-       sandbox.stub(GitSource.prototype, 'readFiles', function() {
-         return Promise.resolve(null);
-       });
+       const sources = [ {
+         readFiles : () => Promise.resolve(null)
+       }, {
+         readFiles: () => Promise.resolve(fsResult)
+       }];
 
-       const fsStub =
-         sandbox.stub(FileSystemSource.prototype, 'readFiles', function () {
-          return Promise.resolve(fsResult);
-         });
+       const builderStub =
+         sandbox.stub(Builder.prototype, 'getOutput')
+          .returns(expectedDisplayObject);
        const displayStub =
          sandbox.stub(Display.prototype, 'displayFiles')
           .withArgs(expectedDisplayObject);
 
        // act
-       const result = yield sut(dirPath);
+       const result = yield sut(sources, dirPath);
 
        // assert
-       fsStub.should.have.been.called;
+       builderStub.should.have.been.called;
        displayStub.should.have.been.called;
      });
 });
