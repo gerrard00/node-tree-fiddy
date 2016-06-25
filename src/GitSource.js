@@ -1,8 +1,9 @@
 'use strict';
 
 const split2 = require('split2');
+const spawn = require('child_process').spawn;
 
-function executeCommand(spawn, path, extraArguments) {
+function executeCommand(path, extraArguments) {
   return new Promise((resolve, reject) => {
     const args = ['ls-files'];
     const dataBuffers = [];
@@ -43,19 +44,17 @@ function executeCommand(spawn, path, extraArguments) {
 
 class GitSource
 {
-  constructor(spawn) {
-    this.spawn = spawn;
+  constructor() {
     this.numberOfCommandsToProcess = 2;
     this.isRepo = true;
   }
 
   *readFiles(path, mySpawn) {
     try {
-      const trackedResults = 
-        yield executeCommand(this.spawn, path);
-      const untrackedResults = 
-        yield executeCommand(this.spawn, 
-          path, ['--other', '--exclude-standard']);
+      const trackedResults =
+        yield executeCommand(path);
+      const untrackedResults =
+        yield executeCommand(path, ['--other', '--exclude-standard']);
 
       if (!trackedResults || !untrackedResults) {
         throw new Error('Unexpected null results from git commands.');
