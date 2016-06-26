@@ -21,12 +21,38 @@ function convertToArchyFriendly(original, name) {
   return result;
 }
 
+function getSummary(fileTree, providedSummary) {
+  let summary = providedSummary ||  {
+    fileCount: 0, 
+    // start at - 1, because the target directory shouldn't be counted
+    directoryCount: -1
+  };
+
+  if (fileTree.isDirectory) {
+    summary.directoryCount++;
+  } else {
+    summary.fileCount++;
+  }
+
+  if (fileTree.children) {
+    for(const child in fileTree.children) {
+      getSummary(fileTree.children[child], summary);
+    }
+  }
+
+  return summary;
+}
+
 class Display {
   displayFiles(fileTree, rootPath) {
-    const archyFriendlyResult =
+    const archyFriendlyTree =
       convertToArchyFriendly(fileTree, rootPath);
 
-    return archy(archyFriendlyResult);
+    const treeOutput = archy(archyFriendlyTree);
+
+    const summary = getSummary(fileTree);
+
+    return `${treeOutput}\n${summary.directoryCount} directories, ${summary.fileCount} files\n`;
   }
 }
 
