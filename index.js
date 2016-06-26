@@ -2,6 +2,7 @@
 
 const GitSource = require('./src/GitSource');
 const FileSystemSource = require('./src/FileSystemSource');
+const directoryIdentifier = require('./src/directoryIdentifier');
 const tree = require('./src/tree');
 
 const targetPath = (process.argv.length == 3) ?
@@ -10,7 +11,7 @@ const targetPath = (process.argv.length == 3) ?
 // sources in priority order
 const sources = [ new GitSource(), new FileSystemSource() ];
 
-tree(sources, targetPath)
+tree(sources, targetPath, directoryIdentifier)
   .then(output => console.log(output))
   .catch(err => {
     console.error(err);

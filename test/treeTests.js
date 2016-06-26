@@ -38,14 +38,17 @@ describe('Tree', function() {
          readFiles: () => Promise.resolve(treeToDisplay)
        }];
 
+       const spyPreprocessor = sandbox.spy();
+
        const displayStub =
          sandbox.stub(Display.prototype, 'displayFiles')
           .withArgs(treeToDisplay);
 
        // act
-       const result = yield sut(sources, dirPath);
+       const result = yield sut(sources, dirPath, spyPreprocessor);
 
        // assert
-       displayStub.should.have.been.called;
+       spyPreprocessor.should.have.been.calledWith(treeToDisplay);
+       displayStub.should.have.been.calledWith(treeToDisplay);
      });
 });

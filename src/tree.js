@@ -2,10 +2,9 @@
 
 const co = require('co');
 
-const Builder = require('./Builder');
 const Display = require('./Display');
 
-module.exports = function tree(sources, targetPath) {
+module.exports = function tree(sources, targetPath, preprocessor) {
   return co(function*() {
     let fileTree;
 
@@ -18,6 +17,8 @@ module.exports = function tree(sources, targetPath) {
         break;
       }
     }
+
+    preprocessor(fileTree, targetPath);
 
     const displayer = new Display();
     const output = displayer.displayFiles(fileTree, targetPath)
