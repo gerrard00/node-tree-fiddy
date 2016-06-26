@@ -1,7 +1,5 @@
-'use strict';
-
 const chai = require('chai');
-const should = chai.should();
+chai.should();
 const sinon = require('sinon');
 
 const Display = require('../src/Display');

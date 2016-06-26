@@ -7,7 +7,8 @@
     "node-tree-fiddy": "index.js"
   },
   "scripts": {
-    "test": "_mocha --recursive"
+    "test": "_mocha --recursive",
+    "lint": "eslint src test"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,9 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "co-mocha": "^1.1.2",
+    "eslint": "^2.13.1",
+    "eslint-config-airbnb-base": "^3.0.1",
+    "eslint-plugin-import": "^1.9.2",
     "mocha": "^2.5.3",
     "mock-spawn": "^0.2.6",
     "sinon": "^1.17.4",

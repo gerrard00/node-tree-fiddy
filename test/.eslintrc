@@ -1,2 +1,6 @@
+rules:
+  quote-props: off
+  prefer-arrow-callback: off
 env:
   mocha: true
+  node: true

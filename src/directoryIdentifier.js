@@ -1,5 +1,3 @@
-'use strict';
-
 const fs = require('fs');
 const path = require('path');
 
@@ -16,7 +14,7 @@ module.exports = function directoryIdentifier(tree, targetPath) {
   }
 
   // process children
-  for (const key in tree.children) {
+  for (const key of Object.keys(tree.children)) {
     directoryIdentifier(tree.children[key], path.join(targetPath, key));
   }
 };

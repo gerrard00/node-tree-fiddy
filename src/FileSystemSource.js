@@ -1,15 +1,13 @@
-'use strict';
-
 const fs = require('fs');
 const path = require('path');
 const Builder = require('./Builder');
 
-//TODO: interdependency, send this in as an argument
+// TODO: interdependency, send this in as an argument
 const GitSource = require('./GitSource');
 const gitSourceInstance = new GitSource();
 
 function *walkDirectory(targetPath, builder, rootPath) {
-  let isRoot = !rootPath;
+  const isRoot = !rootPath;
 
   if (isRoot) {
     rootPath = targetPath;
@@ -17,14 +15,14 @@ function *walkDirectory(targetPath, builder, rootPath) {
 
   const files = fs.readdirSync(targetPath);
 
-  for (let file of files) {
+  for (const file of files) {
     const fullPath = path.join(targetPath, file);
     const relativePath = path.relative(rootPath, fullPath);
     const isDirectory = fs.lstatSync(fullPath).isDirectory();
 
     builder.addEntry(relativePath, { isDirectory });
 
-    if(isDirectory) {
+    if (isDirectory) {
       // check for a .git sub-folder
       let isRepo = false;
 
@@ -32,7 +30,7 @@ function *walkDirectory(targetPath, builder, rootPath) {
         // will throw if no git sub-folder
         fs.statSync(path.join(fullPath, '.git'));
         isRepo = true;
-      } catch(err) {
+      } catch (err) {
         // only catch ENOENT
         if (err.toString().match(/ENOENT/)) {
           isRepo = false;
@@ -56,7 +54,7 @@ function *walkDirectory(targetPath, builder, rootPath) {
 
       // if we got here it's not a repo, or we had a git problem
       if (!handledByGit) {
-        yield *walkDirectory(fullPath, builder, rootPath);
+        yield* walkDirectory(fullPath, builder, rootPath);
       }
     }
   }

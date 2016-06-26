@@ -1,7 +1,5 @@
-'use strict';
-
 const chai = require('chai');
-const should = chai.should();
+chai.should();
 
 const Builder = require('../src/Builder');
 
@@ -9,13 +7,13 @@ describe('Builder', function() {
   it('can build a normal tree', function() {
     const expectedOutput = {
       'children': {
-        'foo' : {
+        'foo': {
           'children': {
             'bar': {},
             'baz': {
               'children': {
-                'baz1' : {},
-                'baz2' : {}
+                'baz1': {},
+                'baz2': {}
               }
             }
           }

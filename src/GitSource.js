@@ -1,5 +1,3 @@
-'use strict';
-
 const split2 = require('split2');
 const spawn = require('child_process').spawn;
 const Builder = require('./Builder');
@@ -26,19 +24,13 @@ function executeCommand(path, extraArguments) {
       errorBuffers.push(data);
     });
 
-    ls.on('close', (code) => {
+    ls.on('close', () => {
       if (errorBuffers.length > 0) {
         const errorString = Buffer.concat(errorBuffers).toString();
         return reject(errorString);
       }
 
-      // TODO: 128 seems to happen for not a git repo, but it's only for that error.
-      // ignore exit codes for now
-      // if (code !== 0 && code != 128) {
-      //   return reject(`Bad exit code ${code}`);
-      // }
-
-      resolve(dataBuffers);
+      return resolve(dataBuffers);
     });
   });
 }
@@ -50,7 +42,7 @@ class GitSource
     this.isRepo = true;
   }
 
-  *readFiles(path, mySpawn) {
+  *readFiles(path) {
     try {
       const trackedResults =
         yield executeCommand(path);
@@ -69,7 +61,7 @@ class GitSource
       return fileTree;
     } catch (err) {
       // not a repo, return null
-      if(err.toString().match(/Not a git repository/)) {
+      if (err.toString().match(/Not a git repository/)) {
         return null;
       }
 

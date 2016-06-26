@@ -1,28 +1,23 @@
-'use strict';
-
 const chai = require('chai');
-const should = chai.should();
-const fs = require('fs');
-const path = require('path');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 require('co-mocha');
+chai.should();
 
-const Builder = require('../src/Builder');
 const Display = require('../src/Display');
 
 const sut = require('../src/tree');
 
 chai.use(sinonChai);
 
-describe('Tree', function() {
+describe('Tree', function () {
   let sandbox;
 
-  beforeEach(function() {
+  beforeEach(function () {
     sandbox = sinon.sandbox.create();
   });
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
   });
 
@@ -32,10 +27,10 @@ describe('Tree', function() {
        const dirPath = 'foo';
        const treeToDisplay = { something: 'to display' };
 
-       const sources = [ {
-         readFiles : () => Promise.resolve(null)
+       const sources = [{
+         readFiles: () => Promise.resolve(null),
        }, {
-         readFiles: () => Promise.resolve(treeToDisplay)
+         readFiles: () => Promise.resolve(treeToDisplay),
        }];
 
        const spyPreprocessor = sandbox.spy();
@@ -45,7 +40,7 @@ describe('Tree', function() {
           .withArgs(treeToDisplay);
 
        // act
-       const result = yield sut(sources, dirPath, spyPreprocessor);
+       yield sut(sources, dirPath, spyPreprocessor);
 
        // assert
        spyPreprocessor.should.have.been.calledWith(treeToDisplay);

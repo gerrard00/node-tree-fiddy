@@ -1,32 +1,30 @@
-'use strict';
-
 const chai = require('chai');
 require('co-mocha');
-const should = chai.should();
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const mockSpawn = require('mock-spawn');
 const childProcess = require('child_process');
+chai.should();
 
 const Builder = require('../src/Builder');
 
-describe('GitSource', function(){
+describe('GitSource', function (){
   let sandbox;
 
-  beforeEach(function() {
+  beforeEach(function () {
     sandbox = sinon.sandbox.create();
   });
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
   });
 
   it('reads file from git repo', function *() {
-    const expectedFiles = [ 'foo',
+    const expectedFiles = ['foo',
       'foo/bar',
       'foo/baz',
       'foo/baz/baz1',
-      'foo/baz/baz2' ];
+      'foo/baz/baz2'];
     const expectedTree = { some: 'tree' };
 
     const mySpawn = mockSpawn();

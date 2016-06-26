@@ -1,9 +1,8 @@
 const archy = require('archy');
-const path = require('path');
 
 function convertToArchyFriendly(original, name) {
   const result = {
-    label : name,
+    label: name,
   };
 
   if (original.children) {
@@ -22,10 +21,10 @@ function convertToArchyFriendly(original, name) {
 }
 
 function getSummary(fileTree, providedSummary) {
-  let summary = providedSummary ||  {
-    fileCount: 0, 
+  const summary = providedSummary || {
+    fileCount: 0,
     // start at - 1, because the target directory shouldn't be counted
-    directoryCount: -1
+    directoryCount: -1,
   };
 
   if (fileTree.isDirectory) {
@@ -35,8 +34,8 @@ function getSummary(fileTree, providedSummary) {
   }
 
   if (fileTree.children) {
-    for(const child in fileTree.children) {
-      getSummary(fileTree.children[child], summary);
+    for (const key of Object.keys(fileTree.children)) {
+      getSummary(fileTree.children[key], summary);
     }
   }
 
