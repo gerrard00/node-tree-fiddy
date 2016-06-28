@@ -6,6 +6,9 @@
   "bin": {
     "node-tree-fiddy": "index.js"
   },
+  "engine": {
+    "node": ">=4.4.6"
+  },
   "scripts": {
     "test": "_mocha --recursive",
     "lint": "eslint src test"

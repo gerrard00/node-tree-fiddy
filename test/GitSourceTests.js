@@ -1,3 +1,5 @@
+'use strict';
+
 const chai = require('chai');
 require('co-mocha');
 const sinon = require('sinon');

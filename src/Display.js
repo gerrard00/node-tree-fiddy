@@ -1,3 +1,5 @@
+'use strict';
+
 const archy = require('archy');
 
 function convertToArchyFriendly(original, name) {

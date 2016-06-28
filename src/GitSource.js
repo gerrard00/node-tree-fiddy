@@ -1,15 +1,17 @@
+'use strict';
+
 const split2 = require('split2');
 const spawn = require('child_process').spawn;
 const Builder = require('./Builder');
 
 function executeCommand(path, extraArguments) {
   return new Promise((resolve, reject) => {
-    const args = ['ls-files'];
+    let args = ['ls-files'];
     const dataBuffers = [];
     const errorBuffers = [];
 
     if (extraArguments) {
-      args.push(...extraArguments);
+      args = args.concat(extraArguments);
     }
 
     const ls = spawn('git', args, { cwd: path });

@@ -1,3 +1,5 @@
+'use strict';
+
 const co = require('co');
 
 const Display = require('./Display');
