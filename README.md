@@ -1,8 +1,7 @@
 # node-tree-fiddy
 
-# Don't use this, you can easily setup a shell alias: 
+# Don't use this, you can easily setup a shell alias: https://gist.github.com/gerrard00/405266273b22c81e3cfa9241608de05f
 
-<script src="https://gist.github.com/gerrard00/405266273b22c81e3cfa9241608de05f.js"></script>
 
 The tree utility is very useful, unless you are in a folder that contains something like a node project. When used in a folder like that you just wind up seeing hundreds of files from your node_modules folder. This is a hacky replacement that does not show ignored files based on your .gitignore file.
 
